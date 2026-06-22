@@ -1,0 +1,22 @@
+{
+  "name": "datapublytics-backend",
+  "version": "1.0.0",
+  "description": "DataPublytics - Advanced Web Analytics Platform Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed:admin": "node seed/seedAdmin.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql2": "^3.10.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "ua-parser-js": "^1.0.38",
+    "geoip-lite": "^1.4.10",
+    "node-cron": "^3.0.3",
+    "axios": "^1.7.2"
+  }
+}

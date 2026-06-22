@@ -1,0 +1,287 @@
+:root {
+  --bg-dark: #0b1320;
+  --bg-panel: #111c30;
+  --bg-panel-2: #16233b;
+  --border: #1f3050;
+  --blue: #2f80ff;
+  --blue-light: #5aa6ff;
+  --green: #18c987;
+  --gold: #f5b942;
+  --text-main: #eaf1ff;
+  --text-dim: #8fa3c4;
+  --radius: 14px;
+  --shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+  background: radial-gradient(circle at 20% 0%, #0e1b30 0%, var(--bg-dark) 60%);
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+a { color: var(--blue-light); text-decoration: none; }
+
+/* ---------- Layout ---------- */
+.app-shell { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 240px;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 28px;
+  background: linear-gradient(90deg, var(--blue-light), var(--green), var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.nav-item {
+  padding: 11px 14px;
+  border-radius: 10px;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.15s;
+}
+.nav-item:hover { background: var(--bg-panel-2); color: var(--text-main); }
+.nav-item.active {
+  background: linear-gradient(90deg, rgba(47,128,255,0.18), rgba(24,201,135,0.12));
+  color: var(--text-main);
+  border-left: 3px solid var(--green);
+}
+
+.nav-group { margin-top: 2px; }
+.nav-group-header {
+  padding: 11px 14px;
+  border-radius: 10px;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+.nav-group-header:hover { background: var(--bg-panel-2); color: var(--text-main); }
+.nav-group-header .chev { font-size: 11px; transition: transform 0.15s; margin-left: auto; }
+.nav-group-items {
+  display: none;
+  flex-direction: column;
+  padding-left: 14px;
+  border-left: 2px solid var(--border);
+  margin-left: 18px;
+}
+.nav-group-items.open { display: flex; }
+.nav-group-items .nav-item { font-size: 13.5px; padding: 8px 12px; }
+
+.main {
+  flex: 1;
+  padding: 28px 36px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.topbar h1 { font-size: 22px; font-weight: 700; }
+
+.range-select {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+}
+
+/* Date picker (calendar) — make icon + text visible on dark theme */
+input[type="date"].range-select {
+  color-scheme: dark;
+  color: var(--text-main);
+  font-family: inherit;
+  cursor: pointer;
+  min-width: 150px;
+}
+input[type="date"].range-select::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.6);
+  cursor: pointer;
+  padding: 4px;
+}
+input[type="date"].range-select::-webkit-datetime-edit-text,
+input[type="date"].range-select::-webkit-datetime-edit-month-field,
+input[type="date"].range-select::-webkit-datetime-edit-day-field,
+input[type="date"].range-select::-webkit-datetime-edit-year-field {
+  color: var(--text-main);
+}
+
+/* ---------- Cards / Stat Grid ---------- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+  margin-bottom: 26px;
+}
+
+.stat-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--green), var(--gold));
+}
+.stat-label { color: var(--text-dim); font-size: 12.5px; text-transform: uppercase; letter-spacing: .05em; }
+.stat-value { font-size: 28px; font-weight: 800; margin-top: 6px; }
+.stat-value.green { color: var(--green); }
+.stat-value.gold { color: var(--gold); }
+.stat-value.blue { color: var(--blue-light); }
+
+/* ---------- Live pulse dot ---------- */
+.pulse-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--green);
+  display: inline-block;
+  margin-right: 6px;
+  box-shadow: 0 0 0 0 rgba(24,201,135,0.6);
+  animation: pulse 1.6s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(24,201,135,0.5); }
+  70% { box-shadow: 0 0 0 10px rgba(24,201,135,0); }
+  100% { box-shadow: 0 0 0 0 rgba(24,201,135,0); }
+}
+
+/* ---------- Panels / Tables ---------- */
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow);
+}
+.panel h3 { font-size: 15px; margin-bottom: 14px; color: var(--text-main); font-weight: 700; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { text-align: left; color: var(--text-dim); padding: 8px 6px; border-bottom: 1px solid var(--border); font-weight: 600; }
+td { padding: 9px 6px; border-bottom: 1px solid var(--border); }
+tr:hover td { background: var(--bg-panel-2); }
+
+.two-col { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ---------- Custom Date Range Selector (Publytics-style) ---------- */
+.calendar-popup {
+  display: none;
+  position: absolute;
+  top: 46px;
+  right: 0;
+  width: 320px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  z-index: 50;
+}
+.calendar-popup.open { display: block; }
+.calendar-popup-header {
+  background: linear-gradient(90deg, var(--blue), var(--green));
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 16px;
+}
+.calendar-popup-body { padding: 16px; }
+.date-field-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+.date-field { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.date-field label { font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .03em; }
+.date-field input[type="date"] {
+  width: 100%;
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  color-scheme: dark;
+  cursor: pointer;
+}
+.date-field input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.6);
+  cursor: pointer;
+}
+.date-arrow { padding-bottom: 9px; color: var(--text-dim); font-size: 14px; }
+.calendar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+
+
+.auth-wrap {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+}
+.auth-box {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 38px 34px;
+  width: 380px;
+  box-shadow: var(--shadow);
+}
+.auth-box h2 { margin-bottom: 18px; }
+.auth-box input {
+  width: 100%; padding: 11px 13px; margin-bottom: 14px;
+  background: var(--bg-panel-2); border: 1px solid var(--border);
+  border-radius: 9px; color: var(--text-main); font-size: 14px;
+}
+.btn {
+  display: inline-block; width: 100%; text-align: center;
+  padding: 12px; border-radius: 9px; font-weight: 700; cursor: pointer; border: none;
+  background: linear-gradient(90deg, var(--blue), var(--green));
+  color: #fff; font-size: 14.5px;
+}
+.btn.gold { background: linear-gradient(90deg, var(--gold), #ffd37a); color: #1a1300; }
+
+/* ---------- Pricing ---------- */
+.pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 20px; }
+.price-card {
+  background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 28px; text-align: center; box-shadow: var(--shadow);
+}
+.price-card.featured { border: 1px solid var(--gold); box-shadow: 0 0 28px rgba(245,185,66,0.18); }
+.price-card .amount { font-size: 36px; font-weight: 800; margin: 12px 0; color: var(--blue-light); }
+.price-card.featured .amount { color: var(--gold); }

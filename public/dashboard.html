@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Dashboard - DataPublytics</title>
+<link rel="stylesheet" href="css/style.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <div class="sidebar">
+    <div class="logo">DataPublytics</div>
+    <div class="nav-item active" data-tab="overview">📊 Overview</div>
+
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleGroup('grp-realtime')"><span class="pulse-dot"></span>Real Time <span class="chev" id="chev-grp-realtime">▾</span></div>
+      <div class="nav-group-items open" id="grp-realtime">
+        <div class="nav-item" data-tab="realtime-overview">Overview</div>
+        <div class="nav-item" data-tab="realtime-content">Content</div>
+        <div class="nav-item" data-tab="realtime-sources">Sources</div>
+        <div class="nav-item" data-tab="realtime-trends">Trends</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleGroup('grp-audience')">👥 Audience <span class="chev" id="chev-grp-audience">▾</span></div>
+      <div class="nav-group-items" id="grp-audience">
+        <div class="nav-item" data-tab="audience-overview">Overview</div>
+        <div class="nav-item" data-tab="audience-device">Device</div>
+        <div class="nav-item" data-tab="audience-country">Country</div>
+        <div class="nav-item" data-tab="audience-os">Operating System</div>
+        <div class="nav-item" data-tab="audience-browser">Browser</div>
+        <div class="nav-item" data-tab="audience-hostname">Hostname</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleGroup('grp-acq')">🔗 Acquisition <span class="chev" id="chev-grp-acq">▾</span></div>
+      <div class="nav-group-items" id="grp-acq">
+        <div class="nav-item" data-tab="acq-entry">Entry pages</div>
+        <div class="nav-item" data-tab="acq-exit">Exit pages</div>
+        <div class="nav-item" data-tab="acq-utm-source">UTM Source</div>
+        <div class="nav-item" data-tab="acq-utm-medium">UTM Medium</div>
+        <div class="nav-item" data-tab="acq-utm-campaign">UTM Campaign</div>
+        <div class="nav-item" data-tab="acq-referrer">Referrer</div>
+        <div class="nav-item" data-tab="acq-source-medium">Source / Medium</div>
+      </div>
+    </div>
+
+    <div class="nav-item" data-tab="events">⚡ Events</div>
+    <div class="nav-item" data-tab="sites">⚙️ Sites & Tracking Code</div>
+    <div class="nav-item" data-tab="billing">💳 Billing / Upgrade</div>
+    <div style="margin-top:auto;padding-top:20px;">
+      <div class="nav-item" onclick="logout()">🚪 Logout</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Overview</h1>
+      <div style="position:relative;">
+        <select class="range-select" id="siteSelect" onchange="loadAll()"></select>
+        <select class="range-select" id="rangeSelect" onchange="onPresetRangeChange()">
+          <option value="1month">Last 1 Month</option>
+          <option value="2months">Last 2 Months</option>
+          <option value="3months">Last 3 Months</option>
+          <option value="custom">Custom Range...</option>
+        </select>
+        <button class="range-select" id="customRangeBtn" style="display:none;cursor:pointer;" onclick="toggleCalendar()">📅 Select dates</button>
+
+        <div id="calendarPopup" class="calendar-popup">
+          <div class="calendar-popup-header">Date range selector</div>
+          <div class="calendar-popup-body">
+            <div class="date-field-row">
+              <div class="date-field">
+                <label>Start date</label>
+                <input type="date" id="rangeStartInput">
+              </div>
+              <span class="date-arrow">→</span>
+              <div class="date-field">
+                <label>End date</label>
+                <input type="date" id="rangeEndInput">
+              </div>
+            </div>
+            <div class="calendar-footer">
+              <span id="calendarSelectedRange" style="color:var(--text-dim);font-size:12px;"></span>
+              <button class="btn" style="width:auto;padding:7px 18px;font-size:12.5px;" onclick="applyCalendarRange()">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== OVERVIEW ===== -->
+    <div class="tab-content" id="tab-overview">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Total Sessions</div><div class="stat-value blue" id="ov_sessions">-</div></div>
+        <div class="stat-card"><div class="stat-label">New Users</div><div class="stat-value green" id="ov_newusers">-</div></div>
+        <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-value" id="ov_totalusers">-</div></div>
+        <div class="stat-card"><div class="stat-label">Pageviews</div><div class="stat-value gold" id="ov_pageviews">-</div></div>
+        <div class="stat-card"><div class="stat-label">Avg. Duration</div><div class="stat-value" id="ov_duration">-</div></div>
+      </div>
+      <div class="panel">
+        <h3>Daily Sessions Trend</h3>
+        <canvas id="dailyChart" height="90"></canvas>
+      </div>
+    </div>
+
+    <!-- ===== REAL TIME : OVERVIEW ===== -->
+    <div class="tab-content" id="tab-realtime-overview" style="display:none;">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label"><span class="pulse-dot"></span>Active (5 min)</div><div class="stat-value green" id="rt_5">-</div></div>
+        <div class="stat-card"><div class="stat-label">Active (15 min)</div><div class="stat-value blue" id="rt_15">-</div></div>
+        <div class="stat-card"><div class="stat-label">Active (30 min)</div><div class="stat-value gold" id="rt_30">-</div></div>
+        <div class="stat-card"><div class="stat-label">Active (1 hour)</div><div class="stat-value" id="rt_60">-</div></div>
+      </div>
+    </div>
+
+    <!-- ===== REAL TIME : CONTENT (active pages) ===== -->
+    <div class="tab-content" id="tab-realtime-content" style="display:none;">
+      <div class="panel">
+        <h3>Top Active Pages Right Now</h3>
+        <table><thead><tr><th>Page URL</th><th>Active Users</th></tr></thead><tbody id="rt_pages"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== REAL TIME : SOURCES (active by source) ===== -->
+    <div class="tab-content" id="tab-realtime-sources" style="display:none;">
+      <div class="panel">
+        <h3>Active Visitors by Source / Medium</h3>
+        <table><thead><tr><th>Source</th><th>Medium</th><th>Active Users</th></tr></thead><tbody id="rt_sources"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== REAL TIME : TRENDS (live timeframe chart) ===== -->
+    <div class="tab-content" id="tab-realtime-trends" style="display:none;">
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <h3 style="margin:0;"><span class="pulse-dot"></span>Active Users — Live</h3>
+          <select class="range-select" id="liveTimeframe" onchange="onLiveTimeframeChange()">
+            <option value="15">15 seconds</option>
+            <option value="30">30 seconds</option>
+            <option value="60">1 minute</option>
+            <option value="300" selected>5 minutes</option>
+            <option value="900">15 minutes</option>
+            <option value="1800">30 minutes</option>
+          </select>
+        </div>
+        <canvas id="liveChart" height="90"></canvas>
+      </div>
+    </div>
+
+    <!-- ===== AUDIENCE : OVERVIEW (daily records) ===== -->
+    <div class="tab-content" id="tab-audience-overview" style="display:none;">
+      <div class="panel">
+        <h3>Daily Records</h3>
+        <table><thead><tr><th>Date</th><th>Sessions</th><th>New Users</th><th>Unique Users</th></tr></thead><tbody id="aud_table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== AUDIENCE : DEVICE ===== -->
+    <div class="tab-content" id="tab-audience-device" style="display:none;">
+      <div class="panel">
+        <h3>Device Type (Mobile / Web / Server)</h3>
+        <table><thead><tr><th>Device</th><th>Sessions</th></tr></thead><tbody id="device_table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== AUDIENCE : COUNTRY ===== -->
+    <div class="tab-content" id="tab-audience-country" style="display:none;">
+      <div class="panel">
+        <h3>Sessions by Country</h3>
+        <table><thead><tr><th>Country</th><th>Sessions</th></tr></thead><tbody id="country_table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== AUDIENCE : OS ===== -->
+    <div class="tab-content" id="tab-audience-os" style="display:none;">
+      <div class="panel">
+        <h3>Operating System</h3>
+        <table><thead><tr><th>OS</th><th>Sessions</th></tr></thead><tbody id="os_table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== AUDIENCE : BROWSER ===== -->
+    <div class="tab-content" id="tab-audience-browser" style="display:none;">
+      <div class="panel">
+        <h3>Browsers</h3>
+        <table><thead><tr><th>Browser</th><th>Sessions</th></tr></thead><tbody id="browser_table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== AUDIENCE : HOSTNAME ===== -->
+    <div class="tab-content" id="tab-audience-hostname" style="display:none;">
+      <div class="panel">
+        <h3>Hostname</h3>
+        <table><thead><tr><th>Hostname</th><th>Pageviews</th></tr></thead><tbody id="hostname_table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== ACQUISITION : ENTRY PAGES ===== -->
+    <div class="tab-content" id="tab-acq-entry" style="display:none;">
+      <div class="panel">
+        <h3>Entry Pages</h3>
+        <table><thead><tr><th>Page URL</th><th>Sessions</th></tr></thead><tbody id="entry_table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== ACQUISITION : EXIT PAGES ===== -->
+    <div class="tab-content" id="tab-acq-exit" style="display:none;">
+      <div class="panel">
+        <h3>Exit Pages</h3>
+        <table><thead><tr><th>Page URL</th><th>Sessions</th></tr></thead><tbody id="exit_table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== ACQUISITION : UTM SOURCE ===== -->
+    <div class="tab-content" id="tab-acq-utm-source" style="display:none;">
+      <div class="panel">
+        <h3>UTM Source</h3>
+        <table><thead><tr><th>Source</th><th>Sessions</th></tr></thead><tbody id="utmsource_table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== ACQUISITION : UTM MEDIUM ===== -->
+    <div class="tab-content" id="tab-acq-utm-medium" style="display:none;">
+      <div class="panel">
+        <h3>UTM Medium</h3>
+        <table><thead><tr><th>Medium</th><th>Sessions</th></tr></thead><tbody id="utmmedium_table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== ACQUISITION : UTM CAMPAIGN ===== -->
+    <div class="tab-content" id="tab-acq-utm-campaign" style="display:none;">
+      <div class="panel">
+        <h3>UTM Campaign</h3>
+        <table><thead><tr><th>Campaign</th><th>Sessions</th></tr></thead><tbody id="utmcampaign_table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== ACQUISITION : REFERRER ===== -->
+    <div class="tab-content" id="tab-acq-referrer" style="display:none;">
+      <div class="panel">
+        <h3>Referrer</h3>
+        <table><thead><tr><th>Referrer</th><th>Sessions</th></tr></thead><tbody id="referrer_table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== ACQUISITION : SOURCE / MEDIUM (with search + pagination) ===== -->
+    <div class="tab-content" id="tab-acq-source-medium" style="display:none;">
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
+          <h3 style="margin:0;">Source / Medium</h3>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select class="range-select" id="srcPageSize" onchange="renderSourceMediumPage()">
+              <option value="10">10 entries</option>
+              <option value="20" selected>20 entries</option>
+              <option value="50">50 entries</option>
+            </select>
+            <input type="text" id="srcSearchInput" placeholder="Search Source/Medium" oninput="renderSourceMediumPage()"
+              style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg-panel-2);color:#fff;font-size:13px;">
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Source</th><th>Medium</th><th>Sessions</th><th>New Users</th></tr></thead>
+          <tbody id="src_table"></tbody>
+        </table>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:13px;color:var(--text-dim);">
+          <span id="srcPageInfo"></span>
+          <div>
+            <button class="btn" style="width:auto;padding:6px 14px;font-size:12px;display:inline-block;" onclick="changeSourcePage(-1)">‹ Prev</button>
+            <button class="btn" style="width:auto;padding:6px 14px;font-size:12px;display:inline-block;" onclick="changeSourcePage(1)">Next ›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== EVENTS ===== -->
+    <div class="tab-content" id="tab-events" style="display:none;">
+      <div class="panel">
+        <h3>Custom Events</h3>
+        <table><thead><tr><th>Event</th><th>Category</th><th>Total</th></tr></thead><tbody id="events_table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ===== SITES ===== -->
+    <div class="tab-content" id="tab-sites" style="display:none;">
+      <div class="panel">
+        <h3>Add a New Website</h3>
+        <input id="newSiteName" placeholder="Site name" style="padding:10px;margin-right:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg-panel-2);color:#fff;">
+        <input id="newSiteDomain" placeholder="example.com" style="padding:10px;margin-right:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg-panel-2);color:#fff;">
+        <button class="btn" style="width:auto;padding:10px 20px;" onclick="createSite()">Add Site</button>
+      </div>
+      <div class="panel">
+        <h3>Your Tracking Code</h3>
+        <p style="color:var(--text-dim);font-size:13.5px;margin-bottom:10px;">Paste this snippet before <code>&lt;/head&gt;</code> on every page of your site:</p>
+        <pre id="trackingSnippet" style="background:#0a1322;padding:14px;border-radius:10px;overflow-x:auto;font-size:12.5px;color:var(--green);"></pre>
+      </div>
+    </div>
+
+    <!-- ===== BILLING ===== -->
+    <div class="tab-content" id="tab-billing" style="display:none;">
+      <div class="panel">
+        <h3>Pay with Binance (BEP20 USDT)</h3>
+        <p style="color:var(--text-dim);font-size:13.5px;margin-bottom:14px;">Select your plan, send the exact USDT amount on the <b>BEP20 (BSC)</b> network to the wallet shown, then submit your transaction hash for verification (usually approved within 24 hours).</p>
+        <select id="planSelect" class="range-select" onchange="loadPaymentInstructions()">
+          <option value="100k">$10 — 100,000 pageviews / month</option>
+          <option value="10m">$40 — 10,000,000 pageviews / month</option>
+          <option value="unlimited">$55 — Unlimited pageviews / month</option>
+        </select>
+        <div id="payInstructions" style="margin-top:14px;font-size:14px;"></div>
+        <input id="txHash" placeholder="Paste your transaction hash (TxID) here" style="width:100%;margin-top:14px;padding:11px;border-radius:9px;border:1px solid var(--border);background:var(--bg-panel-2);color:#fff;">
+        <button class="btn gold" style="margin-top:12px;" onclick="submitPayment()">Submit Payment Proof</button>
+        <div id="billingMsg" style="margin-top:10px;font-size:13.5px;"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

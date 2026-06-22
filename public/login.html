@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Login - DataPublytics</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <h2>Welcome back</h2>
+      <form id="loginForm">
+        <input type="email" id="email" placeholder="Email address" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <div id="error" style="color:#ff6b6b;font-size:13px;margin-bottom:10px;"></div>
+        <button class="btn" type="submit">Login</button>
+      </form>
+      <p style="margin-top:16px;font-size:13.5px;color:var(--text-dim);">
+        New here? <a href="signup.html">Start your 5-day free trial</a>
+      </p>
+    </div>
+  </div>
+  <script src="js/auth.js"></script>
+  <script>document.getElementById('loginForm').addEventListener('submit', handleLogin);</script>
+</body>
+</html>

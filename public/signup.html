@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Sign Up - DataPublytics</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <h2>Start your 5-day free trial</h2>
+      <p style="color:var(--text-dim);font-size:13px;margin-bottom:18px;">No credit card required.</p>
+      <form id="signupForm">
+        <input type="text" id="name" placeholder="Full name" required />
+        <input type="email" id="email" placeholder="Email address" required />
+        <input type="password" id="password" placeholder="Password" required minlength="6" />
+        <div id="error" style="color:#ff6b6b;font-size:13px;margin-bottom:10px;"></div>
+        <button class="btn" type="submit">Create free account</button>
+      </form>
+      <p style="margin-top:16px;font-size:13.5px;color:var(--text-dim);">
+        Already have an account? <a href="login.html">Login</a>
+      </p>
+    </div>
+  </div>
+  <script src="js/auth.js"></script>
+  <script>document.getElementById('signupForm').addEventListener('submit', handleSignup);</script>
+</body>
+</html>
